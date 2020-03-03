@@ -57,7 +57,7 @@ const main = async () => {
         console.log(`Inserting to AirTable: batch #${batchId}, ${batch.length} records.`)
         try {
             const toRecord = (v: Volunteer) => { return { fields: v } }
-            await airtable('Table 1').create(batch.map(toRecord))
+            await airtable('Volunteers').create(batch.map(toRecord))
         } catch (err) {
             console.log(err)
         }
