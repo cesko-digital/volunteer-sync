@@ -17,8 +17,6 @@ interface UserProfile {
     fields?: CustomUserFieldHash
     is_custom_image?: boolean
     image_original?: string
-    image_512?: string
-    image_1024?: string
 }
 
 interface User {
