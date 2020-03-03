@@ -31,6 +31,7 @@ export interface Volunteer {
     name: string
     title?: string
     phone?: string
+    email?: string
     profilePictureUrl?: string
 }
 
@@ -57,6 +58,7 @@ export function slackUserToVolunteer(user: User): Volunteer {
         slackId: user.id,
         title: filterEmpties(user.profile.title),
         phone: filterEmpties(user.profile.phone),
+        email: filterEmpties(user.profile.email),
         profilePictureUrl: filterEmpties(user.profile.image_original)
     }
 }
