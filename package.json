@@ -1,0 +1,18 @@
+{
+  "name": "cd-volunteer-import",
+  "version": "0.0.1",
+  "description": "Import Česko.Digital volunteer info from Slack",
+  "main": "src/main.ts",
+  "author": "Tomáš Znamenáček <zoul@cesko.digital>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node ./src/main.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@types/node": "^13.7.7",
+    "slack": "^11.0.2",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
+  }
+}
