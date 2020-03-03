@@ -26,6 +26,14 @@ export interface UserListResponse {
     response_metadata: ResponseMetadata
 }
 
+export interface Volunteer {
+    slackId: string
+    name: string
+    title?: string
+    phone?: string
+    profilePictureUrl?: string
+}
+
 export async function getAllWorkspaceUsers(token: string): Promise<User[]> {
     var users: User[] = []
     var cursor = ""
@@ -36,4 +44,19 @@ export async function getAllWorkspaceUsers(token: string): Promise<User[]> {
         cursor = response?.response_metadata?.next_cursor ?? ""
     } while (cursor != "")
     return users
+}
+
+export function slackUserToVolunteer(user: User): Volunteer {
+
+    const filterEmpties = (s: string | undefined) => {
+        return (s != null && s !== "") ? s : undefined
+    }
+
+    return {
+        name: user.real_name,
+        slackId: user.id,
+        title: filterEmpties(user.profile.title),
+        phone: filterEmpties(user.profile.phone),
+        profilePictureUrl: filterEmpties(user.profile.image_original)
+    }
 }
