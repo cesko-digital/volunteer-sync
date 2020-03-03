@@ -10,7 +10,9 @@
     "test": "jest"
   },
   "dependencies": {
+    "@types/airtable": "^0.5.7",
     "@types/node": "^13.7.7",
+    "airtable": "^0.8.1",
     "slack": "^11.0.2",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.3"

@@ -1,41 +1,5 @@
-import * as slack from 'slack';
-import { writeFileSync } from 'fs';
-
-interface CustomUserField {
-    value?: string
-    label?: string
-}
-
-interface CustomUserFieldHash {
-    [key: string]: CustomUserField
-}
-
-interface UserProfile {
-    email?: string
-    title?: string
-    phone?: string
-    fields?: CustomUserFieldHash
-    is_custom_image?: boolean
-    image_original?: string
-}
-
-interface User {
-    id: string
-    name: string
-    real_name: string
-    profile: UserProfile
-    deleted: boolean
-    is_bot: boolean
-}
-
-interface ResponseMetadata {
-    next_cursor?: string
-}
-
-interface UserListResponse {
-    members: User[]
-    response_metadata: ResponseMetadata
-}
+import { User, getAllWorkspaceUsers } from './slack';
+import Airtable from 'airtable';
 
 interface Volunteer {
     slackId: string
@@ -43,18 +7,6 @@ interface Volunteer {
     title?: string
     phone?: string
     profilePictureUrl?: string
-}
-
-async function getAllWorkspaceUsers(token: string): Promise<User[]> {
-    var users: User[] = []
-    var cursor = ""
-    do {
-        console.log(`Getting list of workspace users, cursor “${cursor}”.`)
-        const response = await slack.users.list({token, cursor}) as unknown as UserListResponse
-        users.push(...response.members)
-        cursor = response?.response_metadata?.next_cursor ?? ""
-    } while (cursor != "")
-    return users
 }
 
 const isRegularUser: (_: User) => boolean = (user) => {
@@ -68,8 +20,8 @@ function slackUserToVolunteer(user: User): Volunteer {
     }
 
     return {
-        slackId: user.id,
         name: user.real_name,
+        slackId: user.id,
         title: filterEmpties(user.profile.title),
         phone: filterEmpties(user.profile.phone),
         profilePictureUrl: filterEmpties(user.profile.image_original)
@@ -85,11 +37,32 @@ function envOrDie(key: string): string {
 }
 
 const main = async () => {
-    const token: string = envOrDie("SLACK_API_TOKEN")
-    const users = (await getAllWorkspaceUsers(token)).filter(isRegularUser)
-    const toJSON = (s: any) => JSON.stringify(s, null, 2)
-    writeFileSync("slack-users.json", toJSON(users))
-    writeFileSync("volunteers.json", toJSON(users.map(slackUserToVolunteer)))
+
+    const slackToken = envOrDie("SLACK_API_TOKEN")
+    const airtableToken = envOrDie("AIRTABLE_API_TOKEN")
+
+    const users = (await getAllWorkspaceUsers(slackToken)).filter(isRegularUser)
+    const volunteers = users.map(slackUserToVolunteer)
+
+    console.log(`Downloaded ${users.length} regular users.`)
+
+    const airtable = new Airtable({apiKey: airtableToken}).base('app98Yx4PLPDr68df')
+    const batchSize = 10
+    var batchId = 0
+    while (true) {
+        var batch = volunteers.splice(0, batchSize)
+        if (batch.length == 0) {
+            break
+        }
+        console.log(`Inserting to AirTable: batch #${batchId}, ${batch.length} records.`)
+        try {
+            const toRecord = (v: Volunteer) => { return { fields: v } }
+            await airtable('Table 1').create(batch.map(toRecord))
+        } catch (err) {
+            console.log(err)
+        }
+        batchId++
+    }
 }
 
 main()
