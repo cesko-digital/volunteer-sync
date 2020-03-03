@@ -1,0 +1,14 @@
+name: Sync
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Sync
+      run: |
+        SLACK_API_TOKEN=${{ secrets.SLACK_API_TOKEN }} AIRTABLE_API_TOKEN=${{ secrets.AIRTABLE_API_TOKEN }} yarn dev
