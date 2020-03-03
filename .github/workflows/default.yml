@@ -11,4 +11,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: Sync
       run: |
+        yarn install
         SLACK_API_TOKEN=${{ secrets.SLACK_API_TOKEN }} AIRTABLE_API_TOKEN=${{ secrets.AIRTABLE_API_TOKEN }} yarn dev
