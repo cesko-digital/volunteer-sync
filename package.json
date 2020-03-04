@@ -6,6 +6,7 @@
   "author": "Tomáš Znamenáček <zoul@cesko.digital>",
   "license": "MIT",
   "scripts": {
+    "start": "node ./dist/main.js",
     "dev": "ts-node ./src/main.ts",
     "test": "jest"
   },
