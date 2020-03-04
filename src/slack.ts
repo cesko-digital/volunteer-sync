@@ -1,11 +1,22 @@
 import * as slack from 'slack';
 
+interface CustomField {
+    value?: string
+    alt?: string
+    label?: string
+}
+
+interface CustomFieldHash {
+    [key: string]: CustomField
+}
+
 export interface UserProfile {
     email?: string
     title?: string
     phone?: string
     is_custom_image?: boolean
     image_original?: string
+    fields?: CustomFieldHash
 }
 
 export interface User {
@@ -33,6 +44,7 @@ export interface Volunteer {
     phone?: string
     email?: string
     profilePictureUrl?: string
+    weeklyAvalability?: string
 }
 
 export async function getAllWorkspaceUsers(token: string): Promise<User[]> {
@@ -45,6 +57,19 @@ export async function getAllWorkspaceUsers(token: string): Promise<User[]> {
         cursor = response?.response_metadata?.next_cursor ?? ""
     } while (cursor != "")
     return users
+}
+
+export async function getWeeklyAvailability(token: string, slackId: string): Promise<string | null> {
+
+    interface Response {
+        profile: UserProfile
+    }
+
+    const availabilityFieldTag = "XfNQG9GG77"
+    const response = await slack.users.profile.get({token, user: slackId}) as unknown as Response
+    const customFields = response.profile.fields ?? {}
+
+    return customFields[availabilityFieldTag]?.value ?? null
 }
 
 export function slackUserToVolunteer(user: User): Volunteer {

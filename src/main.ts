@@ -1,4 +1,4 @@
-import { User, getAllWorkspaceUsers, slackUserToVolunteer } from './slack';
+import { User, getAllWorkspaceUsers, slackUserToVolunteer, getWeeklyAvailability } from './slack';
 import { saveToAirTable } from './airtable';
 
 const isRegularUser: (_: User) => boolean = (user) => {
@@ -30,7 +30,15 @@ const main = async () => {
         .filter(hasTitle)
         .map(slackUserToVolunteer)
 
-    console.log(`Downloaded ${regularUsers.length} regular users (${allUsers.length} total), saving to AirTable.`)
+    console.log(`Downloaded ${regularUsers.length} regular users (${allUsers.length} total).`)
+    console.log(`Querying Slack API for volunteer weekly availability info. (This will take a while.)`)
+
+    for (const volunteer of volunteers) {
+        const availability = await getWeeklyAvailability(slackToken, volunteer.slackId)
+        volunteer.weeklyAvalability = availability ?? undefined
+    }
+
+    console.log(`Saving to AirTable.`)
 
     await saveToAirTable(airtableToken, volunteers)
 }
