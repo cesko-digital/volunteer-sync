@@ -28,15 +28,6 @@ export interface User {
     is_bot: boolean
 }
 
-export interface ResponseMetadata {
-    next_cursor?: string
-}
-
-export interface UserListResponse {
-    members: User[]
-    response_metadata: ResponseMetadata
-}
-
 export interface Volunteer {
     slackId: string
     name: string
@@ -45,18 +36,49 @@ export interface Volunteer {
     email?: string
     profilePictureUrl?: string
     weeklyAvalability?: string
+    introPost?: string
+}
+
+export interface Message {
+    type: string
+    user: string
+    text: string
+    ts: string
+}
+
+async function getAllPages<Value, Response>(
+    getPage: (cursor: string) => Promise<Response>,
+    extractItems: (response: Response) => Value[],
+    nextPage: (response: Response) => string | undefined): Promise<Value[]> {
+
+    var items: Value[] = []
+    var cursor = ""
+    var page = 1
+
+    do {
+        console.log(`Retrieving page ${page}, cursor “${cursor}”.`)
+        const response = await getPage(cursor)
+        items.push(...extractItems(response))
+        cursor = nextPage(response) ?? ""
+        page++
+    } while (cursor != "")
+
+    return items
 }
 
 export async function getAllWorkspaceUsers(token: string): Promise<User[]> {
-    var users: User[] = []
-    var cursor = ""
-    do {
-        console.log(`Getting list of workspace users, cursor “${cursor}”.`)
-        const response = await slack.users.list({token, cursor}) as unknown as UserListResponse
-        users.push(...response.members)
-        cursor = response?.response_metadata?.next_cursor ?? ""
-    } while (cursor != "")
-    return users
+    return getAllPages(
+        (cursor)   => slack.users.list({token, cursor}),
+        (response) => response.members,
+        (response) => response?.response_metadata?.next_cursor)
+}
+
+export async function getCompleteChannelHistory(token: string, channel: string): Promise<Message[]> {
+    return getAllPages(
+        (cursor)   => slack.conversations.history({token, cursor, channel}),
+        (response) => response.messages,
+        (response) => response?.response_metadata?.next_cursor
+    )
 }
 
 export async function getWeeklyAvailability(token: string, slackId: string): Promise<string | null> {
