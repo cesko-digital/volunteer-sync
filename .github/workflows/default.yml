@@ -3,6 +3,8 @@ name: Sync
 on:
   push:
     branches: [master]
+  schedule:
+    - cron: '5 2 * * *' # Run at 2.05 UTC each day
 
 jobs:
   build:
