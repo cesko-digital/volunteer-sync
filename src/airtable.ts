@@ -18,7 +18,7 @@ async function getVolunteerAirTableId(
   const filter = `SEARCH("${slackId}", {Slack ID})`;
   const query = table.select({
     filterByFormula: filter,
-    fields: ["slackId"]
+    fields: ["Slack ID"]
   });
   const matches = await query.firstPage();
   return matches.length > 0 ? matches[0].id : null;
