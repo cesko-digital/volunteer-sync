@@ -12,6 +12,9 @@ const isRegularUser: (_: User) => boolean = user => {
   return !user.deleted && !user.is_bot && user.id !== "USLACKBOT";
 };
 
+const sleep = (delayMs: number) =>
+  new Promise(resolve => setTimeout(resolve, delayMs));
+
 function buildIntroPostMap(channelHistory: Message[]): Map<string, string> {
   var map: Map<string, string> = new Map();
   for (const msg of channelHistory) {
@@ -63,12 +66,18 @@ const main = async () => {
   );
 
   for (const volunteer of volunteers) {
-    const availability = await getWeeklyAvailability(
-      slackToken,
-      volunteer.slackId
-    );
-    volunteer.weeklyAvailability = availability ?? undefined;
-    volunteer.introPost = introMap.get(volunteer.slackId);
+    try {
+      const availability = await getWeeklyAvailability(
+        slackToken,
+        volunteer.slackId
+      );
+      volunteer.weeklyAvailability = availability ?? undefined;
+      volunteer.introPost = introMap.get(volunteer.slackId);
+    } catch (error) {
+      // TODO: This is most probably a rate limit kicking in (“ratelimited”), how do we make sure?
+      console.error(error);
+      await sleep(30 * 1000);
+    }
   }
 
   console.log(`Saving to AirTable.`);
@@ -76,9 +85,4 @@ const main = async () => {
   await saveToAirTable(airtableToken, volunteers);
 };
 
-try {
-  main();
-} catch (err) {
-  console.log(err);
-  process.exit(1);
-}
+main();
