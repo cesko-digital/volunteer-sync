@@ -76,4 +76,9 @@ const main = async () => {
   await saveToAirTable(airtableToken, volunteers);
 };
 
-main();
+try {
+  main();
+} catch (err) {
+  console.log(err);
+  process.exit(1);
+}
