@@ -35,7 +35,7 @@ export interface Volunteer {
   phone?: string;
   email?: string;
   profilePictureUrl?: string;
-  weeklyAvalability?: string;
+  weeklyAvailability?: string;
   introPost?: string;
 }
 

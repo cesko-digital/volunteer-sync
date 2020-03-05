@@ -12,10 +12,6 @@ const isRegularUser: (_: User) => boolean = user => {
   return !user.deleted && !user.is_bot && user.id !== "USLACKBOT";
 };
 
-const hasTitle: (_: User) => boolean = user => {
-  return user.profile.title != null && user.profile.title !== "";
-};
-
 function buildIntroPostMap(channelHistory: Message[]): Map<string, string> {
   var map: Map<string, string> = new Map();
   for (const msg of channelHistory) {
@@ -57,7 +53,7 @@ const main = async () => {
 
   const allUsers = await getAllWorkspaceUsers(slackToken);
   const regularUsers = allUsers.filter(isRegularUser);
-  const volunteers = regularUsers.filter(hasTitle).map(slackUserToVolunteer);
+  const volunteers = regularUsers.map(slackUserToVolunteer);
 
   console.log(
     `Downloaded ${regularUsers.length} regular users (${allUsers.length} total).`
@@ -71,7 +67,7 @@ const main = async () => {
       slackToken,
       volunteer.slackId
     );
-    volunteer.weeklyAvalability = availability ?? undefined;
+    volunteer.weeklyAvailability = availability ?? undefined;
     volunteer.introPost = introMap.get(volunteer.slackId);
   }
 
