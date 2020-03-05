@@ -14,7 +14,6 @@ export interface UserProfile {
   email?: string;
   title?: string;
   phone?: string;
-  is_custom_image?: boolean;
   image_original?: string;
   fields?: CustomFieldHash;
 }
