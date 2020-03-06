@@ -8,13 +8,24 @@ import {
 } from "./slack";
 import { saveToAirTable } from "./airtable";
 
+/**
+ * Is the user a regular one?
+ *
+ * We filter out deleted users and bots, including the Slackbot.
+ */
 const isRegularUser: (_: User) => boolean = user => {
   return !user.deleted && !user.is_bot && user.id !== "USLACKBOT";
 };
 
+/**
+ * Pause the thread execution for a given number of ms.
+ */
 const sleep = (delayMs: number) =>
   new Promise(resolve => setTimeout(resolve, delayMs));
 
+/**
+ * Turn a channel history into a map of first posts indexed by user’s Slack ID.
+ */
 function buildIntroPostMap(channelHistory: Message[]): Map<string, string> {
   var map: Map<string, string> = new Map();
   for (const msg of channelHistory) {
@@ -35,6 +46,9 @@ function buildIntroPostMap(channelHistory: Message[]): Map<string, string> {
   return map;
 }
 
+/**
+ * Return a value from the environment and abort if the value is missing
+ */
 function envOrDie(key: string): string {
   const val = process.env[key];
   if (val == null) {

@@ -11,6 +11,12 @@ type Field =
   | "Slack: Avatar"
   | "Slack: Intro";
 
+/**
+ * Find the AirTable record ID by volunteer’s Slack ID
+ *
+ * Unfortunately AirTable doesn’t seem to support turning the Slack ID
+ * into a regular primary key.
+ */
 async function getVolunteerAirTableId(
   table: Airtable.Table<{}>,
   slackId: string
@@ -24,6 +30,12 @@ async function getVolunteerAirTableId(
   return matches.length > 0 ? matches[0].id : null;
 }
 
+/**
+ * Turn a volunteer object to an AirTable record
+ *
+ * The only thing that’s needed is to rename the properties
+ * to appropriate AirTable column labels.
+ */
 function toRecord(v: Volunteer): Partial<Record<Field, string>> {
   return {
     "Slack: Jméno": v.name,
@@ -37,6 +49,12 @@ function toRecord(v: Volunteer): Partial<Record<Field, string>> {
   };
 }
 
+/**
+ * Save a number of volunteers to AirTable
+ *
+ * Is a previous volunteer record with the same Slack ID is found, the record is
+ * updated instead of adding a new one.
+ */
 export async function saveToAirTable(
   apiToken: string,
   volunteers: Volunteer[]

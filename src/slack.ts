@@ -10,6 +10,7 @@ interface CustomFieldHash {
   [key: string]: CustomField;
 }
 
+/** A subset of the Profile object from the Slack API */
 export interface UserProfile {
   email?: string;
   title?: string;
@@ -18,6 +19,7 @@ export interface UserProfile {
   fields?: CustomFieldHash;
 }
 
+/** A subset of the User object from the Slack API */
 export interface User {
   id: string;
   name: string;
@@ -27,6 +29,11 @@ export interface User {
   is_bot: boolean;
 }
 
+/**
+ * Our custom object for storing basic volunteer info
+ *
+ * The fields are populated from `User` and `UserProfile`.
+ */
 export interface Volunteer {
   slackId: string;
   name: string;
@@ -38,6 +45,7 @@ export interface Volunteer {
   introPost?: string;
 }
 
+/** A subset of the Message object from the Slack API */
 export interface Message {
   type: string;
   user: string;
@@ -45,6 +53,7 @@ export interface Message {
   ts: string;
 }
 
+/** A paging helper to get all pages from a paged Slack API call */
 async function getAllPages<Value, Response>(
   getPage: (cursor: string) => Promise<Response>,
   extractItems: (response: Response) => Value[],
@@ -65,6 +74,7 @@ async function getAllPages<Value, Response>(
   return items;
 }
 
+/** Return all users from a given Slack workspace */
 export async function getAllWorkspaceUsers(token: string): Promise<User[]> {
   return getAllPages(
     cursor => slack.users.list({ token, cursor }),
@@ -73,6 +83,7 @@ export async function getAllWorkspaceUsers(token: string): Promise<User[]> {
   );
 }
 
+/** Return all messages from a given Slack channel */
 export async function getCompleteChannelHistory(
   token: string,
   channel: string
@@ -84,6 +95,7 @@ export async function getCompleteChannelHistory(
   );
 }
 
+/** Return the weekly availability custom field from our Slack user’s profile */
 export async function getWeeklyAvailability(
   token: string,
   slackId: string
@@ -102,6 +114,7 @@ export async function getWeeklyAvailability(
   return customFields[availabilityFieldTag]?.value ?? null;
 }
 
+/** Pick fields from a `User` object into a `Volunteer` object */
 export function slackUserToVolunteer(user: User): Volunteer {
   const filterEmpties = (s: string | undefined) => {
     return s != null && s !== "" ? s : undefined;
