@@ -42,7 +42,7 @@ export async function saveToAirTable(
   volunteers: Volunteer[]
 ) {
   const table = new Airtable({ apiKey: apiToken }).base("apppZX1QC3fl1RTBM")(
-    "V2"
+    "Volunteers"
   );
 
   var count = 1;
