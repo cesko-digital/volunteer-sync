@@ -2,23 +2,23 @@ import Airtable from "airtable";
 import { Volunteer } from "./slack";
 
 type Field =
-  | "Name"
-  | "Slack ID"
-  | "Role"
-  | "Slack telefon"
-  | "Email Address"
-  | "Dostupnost"
-  | "Avatar"
-  | "Intro";
+  | "Slack: Jméno"
+  | "Slack: ID"
+  | "Slack: Popis"
+  | "Slack: Telefon"
+  | "Slack: E-mail"
+  | "Slack: Dostupnost"
+  | "Slack: Avatar"
+  | "Slack: Intro";
 
 async function getVolunteerAirTableId(
   table: Airtable.Table<{}>,
   slackId: string
 ): Promise<string | null> {
-  const filter = `SEARCH("${slackId}", {Slack ID})`;
+  const filter = `SEARCH("${slackId}", {Slack: ID})`;
   const query = table.select({
     filterByFormula: filter,
-    fields: ["Slack ID"]
+    fields: ["Slack: ID"]
   });
   const matches = await query.firstPage();
   return matches.length > 0 ? matches[0].id : null;
@@ -26,14 +26,14 @@ async function getVolunteerAirTableId(
 
 function toRecord(v: Volunteer): Partial<Record<Field, string>> {
   return {
-    "Name": v.name,
-    "Slack ID": v.slackId,
-    "Role": v.title,
-    "Slack telefon": v.phone,
-    "Email Address": v.email,
-    "Dostupnost": v.weeklyAvailability,
-    "Avatar": v.profilePictureUrl,
-    "Intro": v.introPost
+    "Slack: Jméno": v.name,
+    "Slack: ID": v.slackId,
+    "Slack: Popis": v.title,
+    "Slack: Telefon": v.phone,
+    "Slack: E-mail": v.email,
+    "Slack: Dostupnost": v.weeklyAvailability,
+    "Slack: Avatar": v.profilePictureUrl,
+    "Slack: Intro": v.introPost
   };
 }
 
