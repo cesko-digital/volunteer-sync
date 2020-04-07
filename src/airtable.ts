@@ -75,12 +75,10 @@ export async function saveToAirTable(
         );
         await table.update(existingId, toRecord(volunteer));
       } else {
-        if (volunteer.title != null) {
-          console.log(
-            `Inserting new user “${slackId}”, record ${count}/${volunteers.length}.`
-          );
-          await table.create(toRecord(volunteer));
-        }
+        console.log(
+          `Inserting new user “${slackId}”, record ${count}/${volunteers.length}.`
+        );
+        await table.create(toRecord(volunteer));
       }
     } catch (err) {
       console.error(err);
