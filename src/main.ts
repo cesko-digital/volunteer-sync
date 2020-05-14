@@ -7,6 +7,7 @@ import {
   getCompleteChannelHistory
 } from "./slack";
 import { saveToAirTable } from "./airtable";
+import { uploadSubscribers } from "./ecomail";
 
 /**
  * Is the user a regular one?
@@ -60,6 +61,7 @@ function envOrDie(key: string): string {
 const main = async () => {
   const slackToken = envOrDie("SLACK_API_TOKEN");
   const airtableToken = envOrDie("AIRTABLE_API_TOKEN");
+  const ecomailToken = envOrDie("ECOMAIL_API_TOKEN");
 
   console.log("Downloading #introductions.");
 
@@ -94,9 +96,8 @@ const main = async () => {
     }
   }
 
-  console.log(`Saving to AirTable.`);
-
   await saveToAirTable(airtableToken, volunteers);
+  await uploadSubscribers(ecomailToken, volunteers);
 };
 
 main();

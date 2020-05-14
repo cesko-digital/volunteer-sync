@@ -14,4 +14,4 @@ jobs:
     - name: Sync
       run: |
         yarn install
-        SLACK_API_TOKEN=${{ secrets.SLACK_API_TOKEN }} AIRTABLE_API_TOKEN=${{ secrets.AIRTABLE_API_TOKEN }} yarn dev
+        SLACK_API_TOKEN=${{ secrets.SLACK_API_TOKEN }} AIRTABLE_API_TOKEN=${{ secrets.AIRTABLE_API_TOKEN }} ECOMAIL_API_TOKEN=${{ secrets.ECOMAIL_API_TOKEN}} yarn dev
