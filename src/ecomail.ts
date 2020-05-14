@@ -15,7 +15,7 @@ export function buildSubscriberData(volunteers: Volunteer[]): SubscriberData {
     .filter(v => v.email != null)
     .map(v => {
       return {
-        email: v.email ?? ""
+        email: v.email!
       };
     });
   return {
