@@ -10,7 +10,7 @@ interface SubscriberData {
   update_existing: boolean;
 }
 
-function buildSubscriberData(volunteers: Volunteer[]): SubscriberData {
+export function buildSubscriberData(volunteers: Volunteer[]): SubscriberData {
   const subs: Subscriber[] = volunteers
     .filter(v => v.email != null)
     .map(v => {
