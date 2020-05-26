@@ -96,8 +96,14 @@ const main = async () => {
     }
   }
 
-  await saveToAirTable(airtableToken, volunteers);
-  await uploadSubscribers(ecomailToken, volunteers);
+  try {
+    console.log(`Saving ${volunteers.length} volunteers to AirTable.`);
+    await saveToAirTable(airtableToken, volunteers);
+    console.log(`Uploading ${volunteers.length} volunteer e-mails to Ecomail.`);
+    await uploadSubscribers(ecomailToken, volunteers);
+  } catch (e) {
+    console.error(e);
+  }
 };
 
-main();
+main().catch(e => console.error(e));
