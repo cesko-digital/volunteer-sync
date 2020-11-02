@@ -5,6 +5,7 @@ on:
     branches: [master]
   schedule:
     - cron: '5 2 * * *' # Run at 2.05 UTC each day
+  workflow_dispatch:
 
 jobs:
   build:
