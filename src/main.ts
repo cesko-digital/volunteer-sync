@@ -8,6 +8,7 @@ import {
 } from "./slack";
 import { saveToAirTable } from "./airtable";
 import { uploadSubscribers } from "./ecomail";
+import { chunk } from "./utils";
 
 /**
  * Is the user a regular one?
@@ -99,8 +100,11 @@ const main = async () => {
   try {
     console.log(`Saving ${volunteers.length} volunteers to AirTable.`);
     await saveToAirTable(airtableToken, volunteers);
-    console.log(`Uploading ${volunteers.length} volunteer e-mails to Ecomail.`);
-    await uploadSubscribers(ecomailToken, volunteers);
+    // Uploading in chunks to uphold Ecomail API limits
+    for (const batch of chunk(volunteers, 500)) {
+      console.log(`Uploading ${batch.length} volunteer e-mails to Ecomail.`);
+      await uploadSubscribers(ecomailToken, batch);
+    }
   } catch (e) {
     console.error(e);
   }
